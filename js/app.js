@@ -98,6 +98,10 @@ function foursquareVenues(largeInfowindow, places, map) {
             '&m=foursquare';
         // A AJAX request to obtain data from Foursqaure, once fail the app will
         // pump up an alert.
+        foursquareRequest(url);
+    }
+
+    function foursquareRequest(url) {
         $.getJSON(url, function(data) {
             if (data.meta.code != 200) {
                 alert("Sorry. Can not get data from foursquare!");
