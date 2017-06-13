@@ -1,0 +1,82 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'HelveticaNeue-Light';
+}
+
+#map-canvas {
+  height: 100%;
+  width: 100%;
+}
+
+.search-form {
+  left: 10px;
+  position: fixed;
+  margin: auto;
+  top: 10px;
+  float: right;
+  border: 2px solid #0000FF;
+  border-radius: 4px;
+  z-index: 1000;
+  min-width: 220px;
+  min-height: 35px;
+}
+
+.list-view {
+  left: 10px;
+  top: 50px;
+  cursor: cell;
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  float: left;
+  min-width: 220px;
+  overflow: auto;
+  padding: 5px;
+  margin: auto;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 2px solid #0000FF;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+.list-view li {
+  margin: auto;
+  padding: 4px;
+}
+
+li {
+  display: list-item;
+  list-style-type: none;
+}
+
+li:hover {
+  background-color: #ddd;
+}
+
+li.active {
+  background-color: #ddd;
+}
+
+
+/* For mobile devices. */
+
+@media only screen and (max-width: 500px) {
+  .list-view {
+    max-height: 100px;
+  }
+}
