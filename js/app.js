@@ -35,7 +35,6 @@ var locations = [{
 
 var viewModel = function() {
     var self = this;
-    var map;
     // Create a new blank array for all the listing largeInfowindow.
     self.largeInfowindow = ko.observableArray([]);
     // Create a new blank array for all the places.
@@ -66,8 +65,8 @@ var viewModel = function() {
     // Click the marker will triger centerMarker() to center the marker and zoom it.
     self.clickHandler = function(data) {
         centerMarker(data, self.map(), self.largeInfowindow);
-    }
-}
+    };
+};
 
 // Render the map with selected options on to the HTML div 'map-canvas'.
 function initMap() {
@@ -89,9 +88,10 @@ function foursquareVenues(largeInfowindow, places, map) {
     var url = '';
     var info = [];
     // For each place in the place list request a JSON file.
-    for (var location in locations) {
+    for (i = 0; i < locations.length; i++) {
+        var location = locations[i];
         url = 'https://api.foursquare.com/v2/venues/' +
-            locations[location].foursquareID +
+            location.foursquareID +
             '?client_id=' + config.CLIENT_ID +
             '&client_secret=' + config.CLIENT_SECRET +
             '&v=20181230' +
@@ -103,7 +103,7 @@ function foursquareVenues(largeInfowindow, places, map) {
                 alert("Sorry. Can not get data from foursquare!");
                 return;
             }
-            var venue = data['response']['venue'];
+            var venue = data.response.venue;
             info = {
                 title: venue.name,
                 rating: venue.rating,
@@ -177,7 +177,7 @@ function setMarkers(location, info, map, largeInfowindow, places) {
 // and zoom in.
 function centerMarker(data, map, markers) {
     // close the open infowindow
-    for (var i = 0; i < markers().length; i++) {
+    for (i = 0; i < markers().length; i++) {
         markers()[i].infowindow.close();
     }
     map.setCenter(new google.maps.LatLng(data.location.lat, data.location.lng));
@@ -192,7 +192,7 @@ function centerMarker(data, map, markers) {
 
 // Marker animation.
 function toggleBounce(marker) {
-    if (marker.setAnimation() != null) {
+    if (marker.setAnimation() !== null) {
         marker.setAnimation(null);
     } else {
         marker.setAnimation(google.maps.Animation.BOUNCE);
