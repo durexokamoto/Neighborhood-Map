@@ -9,8 +9,15 @@ Clone this repository locally or download it.
 Unzip and run the index.html
 
 ### Attribution
-
+```
 w3schools
+```
+```
 code from the Udacity courses
+```
+```
 Google Maps API
+```
+```
 Foursquare API
+```
