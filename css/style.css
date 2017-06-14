@@ -10,7 +10,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'HelveticaNeue-Light';
+  font-family: "HelveticaNeue-Light";
 }
 
 #map-canvas {
@@ -49,7 +49,7 @@ body {
   background-color: #fff;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  border: 2px solid #0000FF;
+  border: 2px solid #0000ff;
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
 }
