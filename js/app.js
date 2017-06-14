@@ -31,6 +31,16 @@ var locations = [{
     foursquareID: '4a3bec21f964a520eaa01fe3'
 }];
 
+var map;
+// Render the map with selected options on to the HTML div 'map-canvas'.
+function initMap() {
+    var mapOptions = {
+        center: { lat: 37.378285, lng: -121.966043 },
+        zoom: 11,
+        mapTypeId: 'roadmap'
+    };
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+}
 
 
 var viewModel = function() {
@@ -43,10 +53,9 @@ var viewModel = function() {
     self.filter = ko.observable("");
     self.search = ko.observable("");
     // Render the map and declare it as an observable.
-    var map = initMap();
-    self.map = ko.observable(map);
+
     // Retrieve JSON data from Foursquare and display selected data on markers.
-    foursquareVenues(self.largeInfowindow, self.places, self.map());
+    foursquareVenues(self.largeInfowindow, self.places, map);
     // Filter subset of location markers
     self.filteredVenues = ko.computed(function() {
         return ko.utils.arrayFilter(self.places(), function(venue) {
@@ -64,19 +73,11 @@ var viewModel = function() {
     }, self);
     // Click the marker will triger centerMarker() to center the marker and zoom it.
     self.clickHandler = function(data) {
-        centerMarker(data, self.map(), self.largeInfowindow);
+        centerMarker(data, map, self.largeInfowindow);
+        google.maps.event.trigger(data.marker, 'click');
     };
 };
 
-// Render the map with selected options on to the HTML div 'map-canvas'.
-function initMap() {
-    var mapOptions = {
-        center: { lat: 37.378285, lng: -121.966043 },
-        zoom: 11,
-        mapTypeId: 'roadmap'
-    };
-    return new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-}
 
 // Get JSON through Foursquare API.
 // Use Foursquare ID to locate the venue which is wanted.
@@ -102,26 +103,31 @@ function foursquareVenues(largeInfowindow, places, map) {
     }
 
     function foursquareRequest(url) {
-        $.getJSON(url, function(data) {
-            if (data.meta.code != 200) {
-                alert("Sorry. Can not get data from foursquare!");
-                return;
+        $.ajax({
+            url: url,
+            dataType: "json",
+            success: function(data) {
+                var venue = data.response.venue;
+                var rating = venue.rating ? venue.rating : 'No rating available';
+                var url = venue.url ? venue.url : 'No link provided';
+                info = {
+                    title: venue.name,
+                    rating: rating,
+                    url: url,
+                    lat: venue.location.lat,
+                    lng: venue.location.lng,
+                    address: venue.location.address +
+                        "<br>" + venue.location.city + ", " +
+                        venue.location.state + " " +
+                        venue.location.postalCode
+                };
+                places.push(venue);
+                // Send requested data to Markers maker.
+                setMarkers(location, info, map, largeInfowindow, places);
+            },
+            error: function() {
+                alert("Sorry. Can not get data from Foursquare!");
             }
-            var venue = data.response.venue;
-            info = {
-                title: venue.name,
-                rating: venue.rating,
-                url: venue.url,
-                lat: venue.location.lat,
-                lng: venue.location.lng,
-                address: venue.location.address +
-                    "<br>" + venue.location.city + ", " +
-                    venue.location.state + " " +
-                    venue.location.postalCode
-            };
-            places.push(venue);
-            // Send requested data to Markers maker.
-            setMarkers(location, info, map, largeInfowindow, places);
         });
     }
 }
@@ -153,7 +159,7 @@ function setMarkers(location, info, map, largeInfowindow, places) {
         shape: shape,
         position: latlng,
         map: map,
-        animation: google.maps.Animation.BOUNCE,
+        animation: google.maps.Animation.DROP,
         content: "<h4><mark><strong>" + info.title + "</strong></mark></h4>" +
             info.address + "<br>" +
             "<p style='color:red'>" + "Rating: " + info.rating + "/10</p>" +
@@ -187,23 +193,24 @@ function centerMarker(data, map, markers) {
     map.setCenter(new google.maps.LatLng(data.location.lat, data.location.lng));
     map.setZoom(14);
     for (var i = 0; i < markers().length; i++) {
-        var content = markers()[i].content.split('<br>');
-        if (data.name === content[0]) {
-            toggleBounce(markers()[i]);
+        if (data.name === markers()[i].content[0]) {
+            google.maps.event.trigger(markers()[i], 'click');
         }
     }
 }
 
 // Marker animation.
 function toggleBounce(marker) {
-    if (marker.setAnimation() !== null) {
+    marker.setAnimation(null);
+    marker.setAnimation(google.maps.Animation.DROP);
+    setTimeout(function() {
         marker.setAnimation(null);
-    } else {
-        marker.setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout(function() {
-            marker.setAnimation(null);
-        }, 600);
-    }
+    }, 600);
+}
+
+// To handle the error case.
+function mapError() {
+    alert("Hey man. Map can not be loaded from Google.");
 }
 
 // Activate Knockout
