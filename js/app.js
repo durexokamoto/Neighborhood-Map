@@ -109,7 +109,7 @@ function foursquareVenues(largeInfowindow, places, map) {
             success: function(data) {
                 var venue = data.response.venue;
                 var rating = venue.rating ? venue.rating : 'No rating available';
-                var url = venue.url ? venue.url : 'No link provided';
+                var url = venue.url ? venue.url : 'No link provided, please do not click!';
                 info = {
                     title: venue.name,
                     rating: rating,
